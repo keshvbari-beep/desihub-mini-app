@@ -1,4 +1,3 @@
-alert("USER JS LOADED");
 const USER_KEY = "desihub_users";
 const CURRENT_USER_KEY = "desihub_current_user";
 const VIDEO_KEY = "desihub_videos";
