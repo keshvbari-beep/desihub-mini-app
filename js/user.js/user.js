@@ -2,41 +2,6 @@ const USER_KEY = "desihub_users";
 const CURRENT_USER_KEY = "desihub_current_user";
 const VIDEO_KEY = "desihub_videos";
 
-const demoVideos = [
-  {
-    id: "demo1",
-    title: "DesiHub Demo Video",
-    category: "drama",
-    videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-    thumbnailUrl: "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800",
-    duration: "00:10",
-    description: "DesiHub demo video"
-  },
-  {
-    id: "demo2",
-    title: "Comedy Demo",
-    category: "comedy",
-    videoUrl: "https://www.w3schools.com/html/movie.mp4",
-    thumbnailUrl: "https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?w=800",
-    duration: "00:20",
-    description: "Comedy demo video"
-  }
-];
-
-document.addEventListener("DOMContentLoaded", () => {
-  initUserPanel();
-});
-
-function initUserPanel() {
-  createDemoVideos();
-  setupAuth();
-  setupNavigation();
-  setupSearch();
-  setupModals();
-  loadCurrentUser();
-  loadVideos();
-}
-
 function getUsers() {
   try {
     return JSON.parse(localStorage.getItem(USER_KEY)) || [];
@@ -57,16 +22,6 @@ function getVideos() {
   }
 }
 
-function saveVideos(videos) {
-  localStorage.setItem(VIDEO_KEY, JSON.stringify(videos));
-}
-
-function createDemoVideos() {
-  if (!localStorage.getItem(VIDEO_KEY)) {
-    saveVideos(demoVideos);
-  }
-}
-
 function getCurrentUser() {
   try {
     return JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
@@ -79,77 +34,192 @@ function saveCurrentUser(user) {
   localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
 }
 
-function logout() {
-  localStorage.removeItem(CURRENT_USER_KEY);
-  showToast("Logout हो गया");
-  setTimeout(() => location.reload(), 500);
+function show(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = "";
 }
 
-function setupAuth() {
+function hide(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = "none";
+}
+
+function showMainApp() {
+  hide("authScreen");
+  show("mainApp");
+
+  const user = getCurrentUser();
+
+  document.querySelectorAll(".userName").forEach(el => {
+    el.textContent = user?.name || "User";
+  });
+
+  document.querySelectorAll(".userEmail").forEach(el => {
+    el.textContent = user?.email || "";
+  });
+
+  loadVideos();
+}
+
+function showAuth() {
+  show("authScreen");
+  hide("mainApp");
+}
+
+function signup() {
+  const name = document.getElementById("signupName")?.value.trim();
+  const email = document.getElementById("signupEmail")?.value.trim().toLowerCase();
+  const password = document.getElementById("signupPassword")?.value;
+
+  if (!name || !email || !password) {
+    alert("सभी जानकारी भरें।");
+    return;
+  }
+
+  if (password.length < 4) {
+    alert("Password कम से कम 4 characters का रखें।");
+    return;
+  }
+
+  const users = getUsers();
+
+  if (users.some(user => user.email === email)) {
+    alert("यह email पहले से registered है।");
+    return;
+  }
+
+  const user = {
+    id: Date.now(),
+    name,
+    email,
+    password,
+    premium: false
+  };
+
+  users.push(user);
+  saveUsers(users);
+  saveCurrentUser(user);
+
+  alert("🎉 Account बन गया!");
+
+  showMainApp();
+}
+
+function login() {
+  const email = document.getElementById("loginEmail")?.value.trim().toLowerCase();
+  const password = document.getElementById("loginPassword")?.value;
+
+  if (!email || !password) {
+    alert("Email और Password डालें।");
+    return;
+  }
+
+  const users = getUsers();
+
+  const user = users.find(
+    u => u.email === email && u.password === password
+  );
+
+  if (!user) {
+    alert("❌ Email या Password गलत है।");
+    return;
+  }
+
+  saveCurrentUser(user);
+  showMainApp();
+}
+
+function logout() {
+  localStorage.removeItem(CURRENT_USER_KEY);
+  showAuth();
+}
+
+function loadVideos() {
+  const grid = document.getElementById("videoGrid");
+  if (!grid) return;
+
+  const videos = getVideos();
+
+  if (videos.length === 0) {
+    grid.innerHTML = `
+      <div style="padding:20px;text-align:center">
+        अभी कोई video उपलब्ध नहीं है।
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = videos.map((video, index) => `
+    <div class="video-card" onclick="playVideo(${index})">
+      <img
+        src="${escapeHTML(video.thumbnail || 'https://via.placeholder.com/600x340?text=DesiHub')}"
+        alt="${escapeHTML(video.title)}"
+        style="width:100%;border-radius:10px"
+      >
+
+      <h3>${escapeHTML(video.title)}</h3>
+
+      <p>
+        ${escapeHTML(video.category || "")}
+        ${video.duration ? " • " + escapeHTML(video.duration) : ""}
+      </p>
+    </div>
+  `).join("");
+}
+
+function playVideo(index) {
+  const videos = getVideos();
+  const video = videos[index];
+
+  if (!video) return;
+
+  const player = document.getElementById("videoPlayer");
+  const title = document.getElementById("playerTitle");
+  const modal = document.getElementById("playerModal");
+
+  if (player) player.src = video.url;
+  if (title) title.textContent = video.title;
+  if (modal) modal.style.display = "flex";
+}
+
+function closePlayer() {
+  const modal = document.getElementById("playerModal");
+  const player = document.getElementById("videoPlayer");
+
+  if (player) {
+    player.pause();
+    player.src = "";
+  }
+
+  if (modal) modal.style.display = "none";
+}
+
+function escapeHTML(text) {
+  return String(text || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+
   const loginForm = document.getElementById("loginForm");
-  const signupForm = document.getElementById("signupForm");
 
   if (loginForm) {
     loginForm.addEventListener("submit", function(e) {
       e.preventDefault();
-
-      const email = document.getElementById("loginEmail").value.trim();
-      const password = document.getElementById("loginPassword").value;
-
-      const users = getUsers();
-
-      const user = users.find(
-        u => u.email === email && u.password === password
-      );
-
-      if (!user) {
-        showToast("Email या password गलत है");
-        return;
-      }
-
-      saveCurrentUser(user);
-      showToast("Login सफल हुआ");
-
-      setTimeout(() => {
-        location.reload();
-      }, 500);
+      login();
     });
   }
+
+  const signupForm = document.getElementById("signupForm");
 
   if (signupForm) {
     signupForm.addEventListener("submit", function(e) {
       e.preventDefault();
-
-      const name = document.getElementById("signupName").value.trim();
-      const email = document.getElementById("signupEmail").value.trim();
-      const password = document.getElementById("signupPassword").value;
-
-      const users = getUsers();
-
-      if (users.some(u => u.email === email)) {
-        showToast("यह email पहले से मौजूद है");
-        return;
-      }
-
-      const user = {
-        id: Date.now().toString(),
-        name,
-        email,
-        password,
-        subscription: "free",
-        expiry: null,
-        createdAt: new Date().toISOString()
-      };
-
-      users.push(user);
-      saveUsers(users);
-      saveCurrentUser(user);
-
-      showToast("Account बन गया");
-
-      setTimeout(() => {
-        location.reload();
-      }, 500);
+      signup();
     });
   }
 
@@ -158,324 +228,12 @@ function setupAuth() {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", logout);
   }
-}
 
-function loadCurrentUser() {
-  const user = getCurrentUser();
+  const currentUser = getCurrentUser();
 
-  const authScreen = document.getElementById("authScreen");
-  const mainApp = document.getElementById("mainApp");
-
-  if (!user) {
-    if (authScreen) authScreen.classList.remove("hidden");
-    if (mainApp) mainApp.classList.add("hidden");
-    return;
+  if (currentUser) {
+    showMainApp();
+  } else {
+    showAuth();
   }
-
-  if (authScreen) authScreen.classList.add("hidden");
-  if (mainApp) mainApp.classList.remove("hidden");
-
-  const nameElements = document.querySelectorAll(".userName");
-
-  nameElements.forEach(el => {
-    el.textContent = user.name || "User";
-  });
-
-  const emailElements = document.querySelectorAll(".userEmail");
-
-  emailElements.forEach(el => {
-    el.textContent = user.email || "";
-  });
-
-  updateSubscription();
-}
-
-function updateSubscription() {
-  const user = getCurrentUser();
-
-  if (!user) return;
-
-  let active = false;
-
-  if (user.subscription && user.expiry) {
-    active = new Date(user.expiry).getTime() > Date.now();
-  }
-
-  const premiumElements = document.querySelectorAll(".premiumStatus");
-
-  premiumElements.forEach(el => {
-    el.textContent = active ? "Premium Active" : "Free Plan";
-  });
-
-  const subscriptionBanner =
-    document.getElementById("subscriptionBanner");
-
-  if (subscriptionBanner) {
-    subscriptionBanner.style.display = active ? "none" : "block";
-  }
-}
-
-function hasPremium() {
-  const user = getCurrentUser();
-
-  if (!user) return false;
-
-  return (
-    user.subscription &&
-    user.expiry &&
-    new Date(user.expiry).getTime() > Date.now()
-  );
-}
-
-function loadVideos(list = getVideos()) {
-  const grid = document.getElementById("videoGrid");
-
-  if (!grid) return;
-
-  if (!list.length) {
-    grid.innerHTML = "<p>कोई video नहीं मिला।</p>";
-    return;
-  }
-
-  grid.innerHTML = list.map(video => `
-    <div class="video-card" onclick="playVideo('${escapeHTML(video.id)}')">
-
-      <div class="video-thumb">
-        <img
-          src="${escapeHTML(video.thumbnailUrl)}"
-          alt="${escapeHTML(video.title)}"
-          onerror="this.src='https://via.placeholder.com/600x350?text=DesiHub'"
-        >
-
-        <span class="video-duration">
-          ${escapeHTML(video.duration || "")}
-        </span>
-      </div>
-
-      <div class="video-info">
-        <h3>${escapeHTML(video.title)}</h3>
-        <p>${escapeHTML(video.description || "")}</p>
-      </div>
-
-    </div>
-  `).join("");
-}
-
-function setupNavigation() {
-  document.querySelectorAll("[data-category]").forEach(button => {
-    button.addEventListener("click", () => {
-      const category = button.dataset.category;
-      filterByCategory(category);
-    });
-  });
-}
-
-function filterByCategory(category) {
-  const buttons = document.querySelectorAll("[data-category]");
-
-  buttons.forEach(btn => {
-    btn.classList.toggle(
-      "active",
-      btn.dataset.category === category
-    );
-  });
-
-  if (category === "all") {
-    loadVideos();
-    return;
-  }
-
-  const videos = getVideos().filter(
-    video => video.category === category
-  );
-
-  loadVideos(videos);
-}
-
-function setupSearch() {
-  const searchInput = document.getElementById("searchInput");
-
-  if (!searchInput) return;
-
-  searchInput.addEventListener("input", () => {
-    const query = searchInput.value.toLowerCase().trim();
-
-    const videos = getVideos().filter(video =>
-      video.title.toLowerCase().includes(query) ||
-      video.description.toLowerCase().includes(query)
-    );
-
-    loadVideos(videos);
-  });
-}
-
-function playVideo(id) {
-  const video = getVideos().find(v => v.id === id);
-
-  if (!video) {
-    showToast("Video नहीं मिला");
-    return;
-  }
-
-  if (!hasPremium()) {
-    showToast("Video देखने के लिए Premium चाहिए");
-
-    const paymentModal =
-      document.getElementById("paymentModal");
-
-    if (paymentModal) {
-      paymentModal.classList.remove("hidden");
-    }
-
-    return;
-  }
-
-  const playerModal =
-    document.getElementById("playerModal");
-
-  const player =
-    document.getElementById("videoPlayer");
-
-  const title =
-    document.getElementById("playerTitle");
-
-  if (player) {
-    player.src = video.videoUrl;
-    player.load();
-  }
-
-  if (title) {
-    title.textContent = video.title;
-  }
-
-  if (playerModal) {
-    playerModal.classList.remove("hidden");
-  }
-}
-
-function setupModals() {
-  document.querySelectorAll("[data-close-modal]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const id = btn.dataset.closeModal;
-      const modal = document.getElementById(id);
-
-      if (modal) modal.classList.add("hidden");
-    });
-  });
-
-  document.querySelectorAll(".modal").forEach(modal => {
-    modal.addEventListener("click", e => {
-      if (e.target === modal) {
-        modal.classList.add("hidden");
-      }
-    });
-  });
-
-  document.querySelectorAll("[data-plan]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const plan = btn.dataset.plan;
-      processPayment(plan);
-    });
-  });
-}
-
-function processPayment(plan) {
-  const plans = {
-    monthly: {
-      price: 99,
-      days: 30
-    },
-    quarterly: {
-      price: 249,
-      days: 90
-    },
-    yearly: {
-      price: 799,
-      days: 365
-    }
-  };
-
-  const selected = plans[plan];
-
-  if (!selected) {
-    showToast("Plan नहीं मिला");
-    return;
-  }
-
-  const user = getCurrentUser();
-
-  if (!user) {
-    showToast("पहले login करें");
-    return;
-  }
-
-  /*
-    यह अभी DEMO PAYMENT है।
-    असली Razorpay/payment gateway लगाने के लिए
-    secure backend की जरूरत होगी।
-  */
-
-  const expiry = new Date();
-
-  expiry.setDate(
-    expiry.getDate() + selected.days
-  );
-
-  user.subscription = plan;
-  user.expiry = expiry.toISOString();
-
-  saveCurrentUser(user);
-
-  const users = getUsers();
-
-  const index = users.findIndex(
-    u => u.id === user.id
-  );
-
-  if (index !== -1) {
-    users[index] = user;
-    saveUsers(users);
-  }
-
-  showToast(
-    `Demo payment सफल — ₹${selected.price}`
-  );
-
-  const modal =
-    document.getElementById("paymentModal");
-
-  if (modal) {
-    modal.classList.add("hidden");
-  }
-
-  updateSubscription();
-}
-
-function showToast(message) {
-  const toast = document.getElementById("toast");
-
-  if (!toast) return;
-
-  toast.textContent = message;
-  toast.style.display = "block";
-
-  clearTimeout(window.toastTimer);
-
-  window.toastTimer = setTimeout(() => {
-    toast.style.display = "none";
-  }, 2500);
-}
-
-function escapeHTML(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-window.playVideo = playVideo;
-window.filterByCategory = filterByCategory;
-window.showToast = showToast;
-window.logout = logout;
+});
