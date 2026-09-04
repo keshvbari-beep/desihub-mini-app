@@ -1,741 +1,414 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DesiHub</title>
 
-  <title>DesiHub - Premium Videos</title>
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+body{
+    font-family:Arial,sans-serif;
+    background:#0b0b0f;
+    color:white;
+}
 
-    body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #fff;
-    }
+button{
+    border:0;
+    cursor:pointer;
+}
 
-    .hidden {
-      display: none !important;
-    }
+.auth-screen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
 
-    button {
-      border: 0;
-      cursor: pointer;
-    }
+.auth-box{
+    width:100%;
+    max-width:400px;
+    background:#17171d;
+    padding:28px;
+    border-radius:18px;
+}
 
-    /* AUTH */
+.logo{
+    text-align:center;
+    font-size:30px;
+    font-weight:bold;
+    margin-bottom:8px;
+}
 
-    .auth-screen {
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
+.subtitle{
+    text-align:center;
+    color:#aaa;
+    margin-bottom:25px;
+}
 
-    .auth-box {
-      width: 100%;
-      max-width: 400px;
-      background: #1e1e1e;
-      padding: 25px;
-      border-radius: 15px;
-    }
+input{
+    width:100%;
+    padding:14px;
+    margin-bottom:14px;
+    border-radius:10px;
+    border:1px solid #333;
+    background:#0e0e12;
+    color:white;
+    font-size:16px;
+}
 
-    .logo {
-      text-align: center;
-      font-size: 30px;
-      font-weight: bold;
-      margin-bottom: 25px;
-    }
+.btn{
+    width:100%;
+    padding:14px;
+    border-radius:10px;
+    background:#ff315c;
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+    margin-bottom:12px;
+}
 
-    .auth-box h2 {
-      margin-bottom: 20px;
-    }
+.switch{
+    text-align:center;
+    color:#aaa;
+    margin-top:10px;
+}
 
-    .auth-box input {
-      width: 100%;
-      padding: 13px;
-      margin-bottom: 12px;
-      border-radius: 8px;
-      border: 1px solid #444;
-      background: #292929;
-      color: white;
-      font-size: 15px;
-    }
+.switch button{
+    background:none;
+    color:#ff315c;
+    font-weight:bold;
+    font-size:15px;
+}
 
-    .primary-btn {
-      width: 100%;
-      padding: 13px;
-      background: #e50914;
-      color: white;
-      border-radius: 8px;
-      font-size: 16px;
-      margin-top: 5px;
-    }
+.main-app{
+    display:none;
+    min-height:100vh;
+}
 
-    /* HEADER */
+header{
+    padding:16px;
+    background:#15151b;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
 
-    .header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: #181818;
-      padding: 14px;
-      border-bottom: 1px solid #333;
-    }
+.brand{
+    font-size:24px;
+    font-weight:bold;
+}
 
-    .header-row {
-      max-width: 1100px;
-      margin: auto;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+.logout{
+    background:#292930;
+    color:white;
+    padding:9px 14px;
+    border-radius:8px;
+}
 
-    .brand {
-      font-size: 22px;
-      font-weight: bold;
-      white-space: nowrap;
-    }
+.container{
+    padding:18px;
+}
 
-    #searchInput {
-      flex: 1;
-      padding: 11px;
-      border-radius: 8px;
-      border: 1px solid #444;
-      background: #292929;
-      color: white;
-    }
+.hero{
+    background:linear-gradient(135deg,#40152a,#171725);
+    padding:25px;
+    border-radius:18px;
+    margin-bottom:20px;
+}
 
-    .profile-btn {
-      background: #333;
-      color: white;
-      padding: 10px 12px;
-      border-radius: 8px;
-    }
+.hero h1{
+    margin-bottom:8px;
+}
 
-    /* MAIN */
+.hero p{
+    color:#ccc;
+}
 
-    .container {
-      max-width: 1100px;
-      margin: auto;
-      padding: 18px;
-    }
+.section-title{
+    margin:20px 0 12px;
+}
 
-    .hero {
-      background: linear-gradient(135deg, #321111, #252525);
-      padding: 25px;
-      border-radius: 15px;
-      margin-bottom: 20px;
-    }
+.video-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:15px;
+}
 
-    .hero h1 {
-      font-size: 30px;
-      margin-bottom: 8px;
-    }
+.video-card{
+    background:#18181e;
+    padding:12px;
+    border-radius:14px;
+    cursor:pointer;
+}
 
-    .hero p {
-      color: #ccc;
-      margin-bottom: 15px;
-    }
+.video-card h3{
+    margin-top:10px;
+    font-size:16px;
+}
 
-    .subscription-banner {
-      background: #241818;
-      border: 1px solid #e50914;
-      padding: 18px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-    }
+.video-card p{
+    color:#999;
+    margin-top:6px;
+    font-size:13px;
+}
 
-    .subscription-banner h3 {
-      margin-bottom: 8px;
-    }
+.player-modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.9);
+    align-items:center;
+    justify-content:center;
+    padding:15px;
+    z-index:1000;
+}
 
-    .plans {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
+.player-box{
+    width:100%;
+    max-width:700px;
+    background:#17171d;
+    padding:15px;
+    border-radius:15px;
+}
 
-    .plan-btn {
-      background: #e50914;
-      color: white;
-      padding: 10px 15px;
-      border-radius: 8px;
-    }
+.player-box video{
+    width:100%;
+    border-radius:10px;
+    background:#000;
+}
 
-    /* CATEGORIES */
+.close{
+    background:#ff315c;
+    color:white;
+    padding:10px 16px;
+    border-radius:8px;
+    margin-top:12px;
+}
 
-    .categories {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 12px;
-      margin-bottom: 15px;
-    }
-
-    .category-btn {
-      flex-shrink: 0;
-      background: #292929;
-      color: white;
-      padding: 10px 15px;
-      border-radius: 20px;
-    }
-
-    .category-btn.active {
-      background: #e50914;
-    }
-
-    /* VIDEO GRID */
-
-    .video-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-    }
-
-    .video-card {
-      background: #1e1e1e;
-      border-radius: 12px;
-      overflow: hidden;
-      cursor: pointer;
-    }
-
-    .video-thumb {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      background: #222;
-    }
-
-    .video-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .video-duration {
-      position: absolute;
-      bottom: 7px;
-      right: 7px;
-      background: #000;
-      padding: 4px 6px;
-      border-radius: 4px;
-      font-size: 12px;
-    }
-
-    .video-info {
-      padding: 12px;
-    }
-
-    .video-info h3 {
-      font-size: 16px;
-      margin-bottom: 7px;
-    }
-
-    .video-info p {
-      color: #aaa;
-      font-size: 13px;
-    }
-
-    /* MODAL */
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 15px;
-      z-index: 100;
-    }
-
-    .modal-box {
-      width: 100%;
-      max-width: 600px;
-      background: #1e1e1e;
-      border-radius: 12px;
-      padding: 20px;
-      position: relative;
-    }
-
-    .close-btn {
-      position: absolute;
-      right: 12px;
-      top: 10px;
-      background: #333;
-      color: white;
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
-    }
-
-    .modal-box h2 {
-      margin-bottom: 15px;
-    }
-
-    .video-player {
-      width: 100%;
-      max-height: 70vh;
-      background: black;
-    }
-
-    .profile-info {
-      line-height: 2;
-      color: #ccc;
-    }
-
-    /* TOAST */
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 25px;
-      transform: translateX(-50%);
-      background: white;
-      color: black;
-      padding: 12px 18px;
-      border-radius: 8px;
-      display: none;
-      z-index: 999;
-    }
-
-    /* MOBILE */
-
-    @media (max-width: 700px) {
-
-      .header-row {
-        flex-wrap: wrap;
-      }
-
-      .brand {
-        width: 100%;
-      }
-
-      #searchInput {
-        width: 100%;
-        flex: 1;
-      }
-
-      .video-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-      }
-
-      .container {
-        padding: 12px;
-      }
-
-      .hero h1 {
-        font-size: 24px;
-      }
-
-      .video-info {
-        padding: 9px;
-      }
-
-      .video-info h3 {
-        font-size: 14px;
-      }
-
-      .video-info p {
-        font-size: 12px;
-      }
-    }
-
-    @media (max-width: 430px) {
-      .video-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+.form-title{
+    font-size:22px;
+    margin-bottom:18px;
+}
+</style>
 </head>
 
 <body>
 
-  <!-- LOGIN / SIGNUP -->
-
-  <div id="authScreen" class="auth-screen">
+<!-- LOGIN / SIGNUP -->
+<div id="authScreen" class="auth-screen">
 
     <div class="auth-box">
 
-      <div class="logo">
-        🎬 DesiHub
-      </div>
+        <div class="logo">🎬 DesiHub</div>
+        <div class="subtitle">Premium Videos</div>
 
-      <h2>Login</h2>
+        <!-- LOGIN -->
+        <div id="loginBox">
 
-      <form id="loginForm">
+            <div class="form-title">Login</div>
 
-        <input
-          type="email"
-          id="loginEmail"
-          placeholder="Email"
-          required
-        >
+            <form id="loginForm">
 
-        <input
-          type="password"
-          id="loginPassword"
-          placeholder="Password"
-          required
-        >
+                <input
+                    id="loginEmail"
+                    type="email"
+                    placeholder="Email"
+                    required
+                >
 
-        <button class="primary-btn" type="submit">
-          Login
-        </button>
+                <input
+                    id="loginPassword"
+                    type="password"
+                    placeholder="Password"
+                    required
+                >
 
-      </form>
+                <button
+                    id="loginButton"
+                    class="btn"
+                    type="submit">
+                    Login
+                </button>
 
-      <br>
+            </form>
 
-      <h2>Create Account</h2>
+            <div class="switch">
+                Account नहीं है?
+                <button
+                    type="button"
+                    onclick="showSignup()">
+                    Create Account
+                </button>
+            </div>
 
-      <form id="signupForm">
-
-        <input
-          type="text"
-          id="signupName"
-          placeholder="Your Name"
-          required
-        >
-
-        <input
-          type="email"
-          id="signupEmail"
-          placeholder="Email"
-          required
-        >
-
-        <input
-          type="password"
-          id="signupPassword"
-          placeholder="Password"
-          required
-        >
-
-        <button class="primary-btn" type="submit">
-          Create Account
-        </button>
-
-      </form>
-
-    </div>
-
-  </div>
-
-
-  <!-- MAIN APP -->
-
-  <div id="mainApp" class="hidden">
-
-    <header class="header">
-
-      <div class="header-row">
-
-        <div class="brand">
-          🎬 DesiHub
         </div>
 
-        <input
-          type="search"
-          id="searchInput"
-          placeholder="Search videos..."
-        >
+
+        <!-- SIGNUP -->
+        <div id="signupBox" style="display:none;">
+
+            <div class="form-title">Create Account</div>
+
+            <form id="signupForm">
+
+                <input
+                    id="signupName"
+                    type="text"
+                    placeholder="Name"
+                    required
+                >
+
+                <input
+                    id="signupEmail"
+                    type="email"
+                    placeholder="Email"
+                    required
+                >
+
+                <input
+                    id="signupPassword"
+                    type="password"
+                    placeholder="Password"
+                    required
+                >
+
+                <button
+                    id="signupButton"
+                    class="btn"
+                    type="submit">
+                    Create Account
+                </button>
+
+            </form>
+
+            <div class="switch">
+                पहले से Account है?
+                <button
+                    type="button"
+                    onclick="showLogin()">
+                    Login
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+<!-- MAIN APP -->
+<div id="mainApp" class="main-app">
+
+    <header>
+
+        <div class="brand">🎬 DesiHub</div>
 
         <button
-          class="profile-btn"
-          onclick="document.getElementById('profileModal').classList.remove('hidden')"
-        >
-          👤
+            id="logoutBtn"
+            class="logout"
+            type="button">
+            Logout
         </button>
-
-      </div>
 
     </header>
 
 
-    <main class="container">
+    <div class="container">
 
-      <!-- HERO -->
+        <div class="hero">
 
-      <section class="hero">
+            <h1>Welcome to DesiHub 👋</h1>
 
-        <h1>Welcome to DesiHub</h1>
-
-        <p>
-          Premium videos और entertainment का मजा लें।
-        </p>
-
-        <p>
-          Status:
-          <strong class="premiumStatus">
-            Free Plan
-          </strong>
-        </p>
-
-      </section>
-
-
-      <!-- SUBSCRIPTION -->
-
-      <section
-        id="subscriptionBanner"
-        class="subscription-banner"
-      >
-
-        <h3>⭐ Premium Membership</h3>
-
-        <p>
-          Premium videos देखने के लिए अपना plan चुनें।
-        </p>
-
-        <div class="plans">
-
-          <button
-            class="plan-btn"
-            data-plan="monthly"
-          >
-            ₹99 / Month
-          </button>
-
-          <button
-            class="plan-btn"
-            data-plan="quarterly"
-          >
-            ₹249 / 3 Months
-          </button>
-
-          <button
-            class="plan-btn"
-            data-plan="yearly"
-          >
-            ₹799 / Year
-          </button>
+            <p>
+                Premium videos एक ही जगह देखें।
+            </p>
 
         </div>
 
-      </section>
 
-
-      <!-- CATEGORIES -->
-
-      <div class="categories">
-
-        <button
-          class="category-btn active"
-          data-category="all"
-        >
-          All
-        </button>
-
-        <button
-          class="category-btn"
-          data-category="witchymoye"
-        >
-          Witchy Moye
-        </button>
-
-        <button
-          class="category-btn"
-          data-category="drama"
-        >
-          Drama
-        </button>
-
-        <button
-          class="category-btn"
-          data-category="comedy"
-        >
-          Comedy
-        </button>
-
-        <button
-          class="category-btn"
-          data-category="action"
-        >
-          Action
-        </button>
-
-      </div>
-
-
-      <!-- VIDEOS -->
-
-      <section>
-
-        <h2 style="margin-bottom:15px;">
-          Latest Videos
+        <h2 class="section-title">
+            🎥 Videos
         </h2>
 
         <div
-          id="videoGrid"
-          class="video-grid"
-        >
+            id="videoGrid"
+            class="video-grid">
+
+            <div style="padding:20px;text-align:center;">
+                Videos loading...
+            </div>
+
         </div>
 
-      </section>
-
-    </main>
-
-  </div>
-
-
-  <!-- PAYMENT MODAL -->
-
-  <div
-    id="paymentModal"
-    class="modal hidden"
-  >
-
-    <div class="modal-box">
-
-      <button
-        class="close-btn"
-        data-close-modal="paymentModal"
-      >
-        ×
-      </button>
-
-      <h2>⭐ Premium Plans</h2>
-
-      <p style="color:#aaa;margin-bottom:15px;">
-        अपना Premium plan चुनें।
-      </p>
-
-      <button
-        class="primary-btn"
-        data-plan="monthly"
-      >
-        ₹99 — Monthly
-      </button>
-
-      <button
-        class="primary-btn"
-        data-plan="quarterly"
-      >
-        ₹249 — Quarterly
-      </button>
-
-      <button
-        class="primary-btn"
-        data-plan="yearly"
-      >
-        ₹799 — Yearly
-      </button>
-
     </div>
 
-  </div>
+</div>
 
 
-  <!-- PROFILE MODAL -->
-
-  <div
-    id="profileModal"
-    class="modal hidden"
-  >
-
-    <div class="modal-box">
-
-      <button
-        class="close-btn"
-        data-close-modal="profileModal"
-      >
-        ×
-      </button>
-
-      <h2>👤 Profile</h2>
-
-      <div class="profile-info">
-
-        <p>
-          Name:
-          <strong class="userName">
-            User
-          </strong>
-        </p>
-
-        <p>
-          Email:
-          <strong class="userEmail">
-          </strong>
-        </p>
-
-        <p>
-          Plan:
-          <strong class="premiumStatus">
-            Free Plan
-          </strong>
-        </p>
-
-      </div>
-
-      <br>
-
-      <button
-        id="logoutBtn"
-        class="primary-btn"
-      >
-        Logout
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <!-- VIDEO PLAYER -->
-
-  <div
+<!-- VIDEO PLAYER -->
+<div
     id="playerModal"
-    class="modal hidden"
-  >
+    class="player-modal">
 
-    <div class="modal-box">
+    <div class="player-box">
 
-      <button
-        class="close-btn"
-        data-close-modal="playerModal"
-      >
-        ×
-      </button>
+        <h3
+            id="playerTitle"
+            style="margin-bottom:12px;">
+        </h3>
 
-      <h2 id="playerTitle">
-        Video
-      </h2>
+        <video
+            id="videoPlayer"
+            controls
+            playsinline>
+        </video>
 
-      <video
-        id="videoPlayer"
-        class="video-player"
-        controls
-        playsinline
-      ></video>
+        <button
+            class="close"
+            type="button"
+            onclick="closePlayer()">
+            Close
+        </button>
 
     </div>
 
-  </div>
+</div>
 
 
-  <!-- TOAST -->
+<script>
 
-  <div id="toast" class="toast"></div>
+function showSignup(){
+
+    document.getElementById("loginBox").style.display="none";
+
+    document.getElementById("signupBox").style.display="block";
+
+}
 
 
-  <!-- TELEGRAM -->
+function showLogin(){
 
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    document.getElementById("signupBox").style.display="none";
 
-  <script src="js/telegram.js"></script>
+    document.getElementById("loginBox").style.display="block";
 
-  <script src="js/user.js"></script>
+}
+
+</script>
+
+
+<!-- Telegram -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<!-- User JavaScript -->
+<script src="./js/user.js"></script>
 
 </body>
 </html>
