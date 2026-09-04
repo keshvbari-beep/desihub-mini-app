@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>DesiHub - Premium Videos</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<!-- LOADING -->
+<div id="loadingScreen" class="loading-screen">
+    <div class="loading-logo">
+        <i class="fas fa-play-circle"></i>
+        <span>DesiHub</span>
+    </div>
+    <div class="loader"></div>
+</div>
+
+<!-- AUTH -->
+<section id="authPage" class="auth-page">
+
+    <div class="auth-container">
+
+        <div class="auth-header">
+            <div class="auth-logo">🎬 DesiHub</div>
+            <p>Premium videos dekhne ke liye login karein</p>
+        </div>
+
+        <div class="auth-tabs">
+            <button id="loginTab" class="auth-tab active"
+                    onclick="switchTab('login')">
+                Login
+            </button>
+
+            <button id="signupTab" class="auth-tab"
+                    onclick="switchTab('signup')">
+                Sign Up
+            </button>
+        </div>
+
+        <!-- LOGIN -->
+        <form id="loginForm"
+              class="auth-form active"
+              onsubmit="handleLogin(event)">
+
+            <div class="form-group">
+                <label>Email</label>
+                <input id="loginEmail"
+                       type="email"
+                       placeholder="aap@email.com"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input id="loginPassword"
+                       type="password"
+                       placeholder="Password"
+                       required>
+            </div>
+
+            <button class="submit-btn" type="submit">
+                Login Karein
+            </button>
+
+            <div class="auth-footer">
+                Account nahi hai?
+                <a href="#" onclick="switchTab('signup');return false;">
+                    Sign Up
+                </a>
+            </div>
+
+        </form>
+
+        <!-- SIGNUP -->
+        <form id="signupForm"
+              class="auth-form"
+              onsubmit="handleSignup(event)">
+
+            <div class="form-group">
+                <label>Naam</label>
+                <input id="signupName"
+                       type="text"
+                       placeholder="Rahul Kumar"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input id="signupEmail"
+                       type="email"
+                       placeholder="aap@email.com"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input id="signupPassword"
+                       type="password"
+                       minlength="6"
+                       placeholder="Kam se kam 6 characters"
+                       required>
+            </div>
+
+            <button class="submit-btn" type="submit">
+                Account Banayein
+            </button>
+
+            <div class="auth-footer">
+                Account hai?
+                <a href="#" onclick="switchTab('login');return false;">
+                    Login
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+</section>
+
+
+<!-- MAIN APP -->
+<main id="mainApp" class="main-app">
+
+    <!-- SUBSCRIPTION -->
+    <div id="subscriptionBanner" class="subscription-banner">
+        <span>
+            ⚠️ Aapka subscription active nahi hai.
+        </span>
+
+        <button onclick="openPaymentModal()">
+            Premium Lein
+        </button>
+    </div>
+
+
+    <!-- HEADER -->
+    <header class="header">
+
+        <div class="logo">
+            <i class="fas fa-play-circle"></i>
+            DesiHub
+        </div>
+
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+
+            <input id="searchInput"
+                   type="text"
+                   placeholder="Videos search karein..."
+                   oninput="filterVideos()">
+        </div>
+
+        <div class="profile-section"
+             onclick="openProfileModal()">
+
+            <img id="userPhoto"
+                 class="profile-photo"
+                 src="https://i.pravatar.cc/150?img=12">
+
+            <div>
+                <div id="userName" class="profile-name">
+                    User
+                </div>
+
+                <span id="subscriptionBadge"
+                      class="subscription-badge expired">
+                    EXPIRED
+                </span>
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- HERO -->
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <span class="hero-badge">
+                🔥 TRENDING NOW
+            </span>
+
+            <h1>🔮 Witchy Moye</h1>
+
+            <p>
+                Latest episodes dekhiye aur premium
+                membership lekar exclusive content unlock karein.
+            </p>
+
+            <button class="hero-btn"
+                    onclick="openPaymentModal()">
+                👑 Premium Access Lein
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- CATEGORY -->
+    <section class="category-header">
+
+        <h2>Latest Videos</h2>
+
+        <p>
+            Apna pasandida episode select karke dekhein
+        </p>
+
+    </section>
+
+
+    <!-- FILTER -->
+    <div class="filters">
+
+        <button class="filter-btn active"
+                onclick="filterByCategory('all',this)">
+            All
+        </button>
+
+        <button class="filter-btn"
+                onclick="filterByCategory('witchymoye',this)">
+            🔮 Witchy Moye
+        </button>
+
+        <button class="filter-btn"
+                onclick="filterByCategory('drama',this)">
+            🎭 Drama
+        </button>
+
+        <button class="filter-btn"
+                onclick="filterByCategory('comedy',this)">
+            😂 Comedy
+        </button>
+
+        <button class="filter-btn"
+                onclick="filterByCategory('action',this)">
+            💥 Action
+        </button>
+
+    </div>
+
+
+    <!-- VIDEOS -->
+    <section id="videoGrid" class="video-grid"></section>
+
+</main>
+
+
+<!-- PAYMENT MODAL -->
+<div id="paymentModal" class="modal">
+
+    <div class="modal-content">
+
+        <button class="close-modal"
+                onclick="closePaymentModal()">
+            ×
+        </button>
+
+        <div class="modal-header">
+            <h2>💳 Premium Membership</h2>
+            <p>Apna plan select karein.</p>
+        </div>
+
+        <div class="payment-options">
+
+            <button class="payment-btn"
+                    onclick="processPayment('Monthly Plan',99,30)">
+                <span>📅 Monthly</span>
+                <strong>₹99</strong>
+            </button>
+
+            <button class="payment-btn"
+                    onclick="processPayment('Quarterly Plan',249,90)">
+                <span>📅 Quarterly</span>
+                <strong>₹249</strong>
+            </button>
+
+            <button class="payment-btn"
+                    onclick="processPayment('Yearly Plan',799,365)">
+                <span>📅 Yearly</span>
+                <strong>₹799</strong>
+            </button>
+
+        </div>
+
+        <div class="modal-footer">
+            🔒 Secure payment<br>
+            Demo payment mode
+        </div>
+
+    </div>
+</div>
+
+
+<!-- PROFILE MODAL -->
+<div id="profileModal" class="modal">
+
+    <div class="modal-content">
+
+        <button class="close-modal"
+                onclick="closeProfileModal()">
+            ×
+        </button>
+
+        <div class="profile-modal-content">
+
+            <img id="modalUserPhoto"
+                 src="https://i.pravatar.cc/150?img=12">
+
+            <h2 id="modalUserName">
+                User
+            </h2>
+
+            <p id="modalUserEmail">
+                user@email.com
+            </p>
+
+            <div class="subscription-info">
+
+                <h3>📅 Subscription</h3>
+
+                <span id="subscriptionStatus"
+                      class="status expired">
+                    EXPIRED
+                </span>
+
+                <p id="subscriptionExpiry">
+                    Subscription active nahi hai.
+                </p>
+
+            </div>
+
+            <div class="profile-actions">
+
+                <button class="profile-btn"
+                        onclick="closeProfileModal();openPaymentModal()">
+                    🔄 Renew Subscription
+                </button>
+
+                <button class="profile-btn logout-btn"
+                        onclick="handleLogout()">
+                    🚪 Logout
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+<!-- VIDEO PLAYER -->
+<div id="playerModal"
+     class="modal player-modal">
+
+    <div class="modal-content player-modal-content">
+
+        <button class="close-modal"
+                onclick="closePlayerModal()">
+            ×
+        </button>
+
+        <div id="videoPlayer"
+             class="video-player">
+        </div>
+
+        <div class="player-info">
+
+            <h2 id="playerTitle">
+                Video Title
+            </h2>
+
+            <p id="playerDescription">
+                Description
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+
+<script src="js/telegram.js"></script>
+<script src="js/user.js"></script>
+
+</body>
+              </html>
