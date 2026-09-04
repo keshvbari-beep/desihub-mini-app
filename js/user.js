@@ -3,237 +3,237 @@ const CURRENT_USER_KEY = "desihub_current_user";
 const VIDEO_KEY = "desihub_videos";
 
 function getUsers() {
-  try {
-    return JSON.parse(localStorage.getItem(USER_KEY)) || [];
-  } catch {
-    return [];
-  }
+    try {
+        return JSON.parse(localStorage.getItem(USER_KEY)) || [];
+    } catch (e) {
+        return [];
+    }
 }
 
 function saveUsers(users) {
-  localStorage.setItem(USER_KEY, JSON.stringify(users));
+    localStorage.setItem(USER_KEY, JSON.stringify(users));
 }
 
 function getVideos() {
-  try {
-    return JSON.parse(localStorage.getItem(VIDEO_KEY)) || [];
-  } catch {
-    return [];
-  }
-}
-
-function getCurrentUser() {
-  try {
-    return JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
-  } catch {
-    return null;
-  }
-}
-
-function saveCurrentUser(user) {
-  localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
-}
-
-function show(id) {
-  const el = document.getElementById(id);
-  if (el) el.style.display = "";
-}
-
-function hide(id) {
-  const el = document.getElementById(id);
-  if (el) el.style.display = "none";
-}
-
-function showMainApp() {
-  hide("authScreen");
-  show("mainApp");
-
-  const user = getCurrentUser();
-
-  document.querySelectorAll(".userName").forEach(el => {
-    el.textContent = user?.name || "User";
-  });
-
-  document.querySelectorAll(".userEmail").forEach(el => {
-    el.textContent = user?.email || "";
-  });
-
-  loadVideos();
-}
-
-function showAuth() {
-  show("authScreen");
-  hide("mainApp");
-}
-
-function signup() {
-  const name = document.getElementById("signupName")?.value.trim();
-  const email = document.getElementById("signupEmail")?.value.trim().toLowerCase();
-  const password = document.getElementById("signupPassword")?.value;
-
-  if (!name || !email || !password) {
-    alert("सभी जानकारी भरें।");
-    return;
-  }
-
-  if (password.length < 4) {
-    alert("Password कम से कम 4 characters का रखें।");
-    return;
-  }
-
-  const users = getUsers();
-
-  if (users.some(user => user.email === email)) {
-    alert("यह email पहले से registered है।");
-    return;
-  }
-
-  const user = {
-    id: Date.now(),
-    name,
-    email,
-    password,
-    premium: false
-  };
-
-  users.push(user);
-  saveUsers(users);
-  saveCurrentUser(user);
-
-  alert("🎉 Account बन गया!");
-
-  showMainApp();
+    try {
+        return JSON.parse(localStorage.getItem(VIDEO_KEY)) || [];
+    } catch (e) {
+        return [];
+    }
 }
 
 function login() {
-  const email = document.getElementById("loginEmail")?.value.trim().toLowerCase();
-  const password = document.getElementById("loginPassword")?.value;
+    const emailBox = document.getElementById("loginEmail");
+    const passwordBox = document.getElementById("loginPassword");
 
-  if (!email || !password) {
-    alert("Email और Password डालें।");
-    return;
-  }
+    if (!emailBox || !passwordBox) {
+        alert("Login form नहीं मिला।");
+        return;
+    }
 
-  const users = getUsers();
+    const email = emailBox.value.trim().toLowerCase();
+    const password = passwordBox.value;
 
-  const user = users.find(
-    u => u.email === email && u.password === password
-  );
+    if (!email || !password) {
+        alert("Email और Password डालें।");
+        return;
+    }
 
-  if (!user) {
-    alert("❌ Email या Password गलत है।");
-    return;
-  }
+    const users = getUsers();
 
-  saveCurrentUser(user);
-  showMainApp();
+    const user = users.find(function(u) {
+        return u.email === email && u.password === password;
+    });
+
+    if (!user) {
+        alert("❌ Email या Password गलत है।");
+        return;
+    }
+
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
+
+    alert("✅ Login सफल हुआ!");
+
+    showMainApp();
+}
+
+function signup() {
+    const name = document.getElementById("signupName")?.value.trim();
+    const email = document.getElementById("signupEmail")?.value.trim().toLowerCase();
+    const password = document.getElementById("signupPassword")?.value;
+
+    if (!name || !email || !password) {
+        alert("सभी जानकारी भरें।");
+        return;
+    }
+
+    const users = getUsers();
+
+    if (users.some(function(u) {
+        return u.email === email;
+    })) {
+        alert("यह Email पहले से registered है।");
+        return;
+    }
+
+    const user = {
+        id: Date.now(),
+        name: name,
+        email: email,
+        password: password,
+        premium: false
+    };
+
+    users.push(user);
+    saveUsers(users);
+
+    localStorage.setItem(
+        CURRENT_USER_KEY,
+        JSON.stringify(user)
+    );
+
+    alert("🎉 Account बन गया!");
+
+    showMainApp();
+}
+
+function showMainApp() {
+    const auth = document.getElementById("authScreen");
+    const app = document.getElementById("mainApp");
+
+    if (auth) auth.style.display = "none";
+    if (app) app.style.display = "block";
+
+    loadVideos();
+}
+
+function showAuth() {
+    const auth = document.getElementById("authScreen");
+    const app = document.getElementById("mainApp");
+
+    if (auth) auth.style.display = "block";
+    if (app) app.style.display = "none";
 }
 
 function logout() {
-  localStorage.removeItem(CURRENT_USER_KEY);
-  showAuth();
+    localStorage.removeItem(CURRENT_USER_KEY);
+    showAuth();
 }
 
 function loadVideos() {
-  const grid = document.getElementById("videoGrid");
-  if (!grid) return;
+    const grid = document.getElementById("videoGrid");
 
-  const videos = getVideos();
+    if (!grid) return;
 
-  if (videos.length === 0) {
-    grid.innerHTML = `
-      <div style="padding:20px;text-align:center">
-        अभी कोई video उपलब्ध नहीं है।
-      </div>
-    `;
-    return;
-  }
+    const videos = getVideos();
 
-  grid.innerHTML = videos.map((video, index) => `
-    <div class="video-card" onclick="playVideo(${index})">
-      <img
-        src="${escapeHTML(video.thumbnail || 'https://via.placeholder.com/600x340?text=DesiHub')}"
-        alt="${escapeHTML(video.title)}"
-        style="width:100%;border-radius:10px"
-      >
+    if (videos.length === 0) {
+        grid.innerHTML =
+            '<div style="padding:20px;text-align:center">अभी कोई video उपलब्ध नहीं है।</div>';
+        return;
+    }
 
-      <h3>${escapeHTML(video.title)}</h3>
-
-      <p>
-        ${escapeHTML(video.category || "")}
-        ${video.duration ? " • " + escapeHTML(video.duration) : ""}
-      </p>
-    </div>
-  `).join("");
+    grid.innerHTML = videos.map(function(video, index) {
+        return `
+            <div class="video-card" onclick="playVideo(${index})">
+                <h3>${escapeHTML(video.title)}</h3>
+                <p>${escapeHTML(video.category || "")}</p>
+                <p>${escapeHTML(video.duration || "")}</p>
+            </div>
+        `;
+    }).join("");
 }
 
 function playVideo(index) {
-  const videos = getVideos();
-  const video = videos[index];
+    const videos = getVideos();
+    const video = videos[index];
 
-  if (!video) return;
+    if (!video) return;
 
-  const player = document.getElementById("videoPlayer");
-  const title = document.getElementById("playerTitle");
-  const modal = document.getElementById("playerModal");
+    const player = document.getElementById("videoPlayer");
+    const title = document.getElementById("playerTitle");
+    const modal = document.getElementById("playerModal");
 
-  if (player) player.src = video.url;
-  if (title) title.textContent = video.title;
-  if (modal) modal.style.display = "flex";
+    if (player) player.src = video.url;
+    if (title) title.textContent = video.title;
+    if (modal) modal.style.display = "flex";
 }
 
 function closePlayer() {
-  const modal = document.getElementById("playerModal");
-  const player = document.getElementById("videoPlayer");
+    const player = document.getElementById("videoPlayer");
+    const modal = document.getElementById("playerModal");
 
-  if (player) {
-    player.pause();
-    player.src = "";
-  }
+    if (player) {
+        player.pause();
+        player.src = "";
+    }
 
-  if (modal) modal.style.display = "none";
+    if (modal) modal.style.display = "none";
 }
 
 function escapeHTML(text) {
-  return String(text || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+    return String(text || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 document.addEventListener("DOMContentLoaded", function() {
 
-  const loginForm = document.getElementById("loginForm");
+    const loginForm = document.getElementById("loginForm");
 
-  if (loginForm) {
-    loginForm.addEventListener("submit", function(e) {
-      e.preventDefault();
-      login();
-    });
-  }
+    if (loginForm) {
+        loginForm.onsubmit = function(e) {
+            e.preventDefault();
+            login();
+            return false;
+        };
+    }
 
-  const signupForm = document.getElementById("signupForm");
+    const signupForm = document.getElementById("signupForm");
 
-  if (signupForm) {
-    signupForm.addEventListener("submit", function(e) {
-      e.preventDefault();
-      signup();
-    });
-  }
+    if (signupForm) {
+        signupForm.onsubmit = function(e) {
+            e.preventDefault();
+            signup();
+            return false;
+        };
+    }
 
-  const logoutBtn = document.getElementById("logoutBtn");
+    const loginButton = document.getElementById("loginButton");
 
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", logout);
-  }
+    if (loginButton) {
+        loginButton.onclick = function(e) {
+            e.preventDefault();
+            login();
+            return false;
+        };
+    }
 
-  const currentUser = getCurrentUser();
+    const signupButton = document.getElementById("signupButton");
 
-  if (currentUser) {
-    showMainApp();
-  } else {
-    showAuth();
-  }
+    if (signupButton) {
+        signupButton.onclick = function(e) {
+            e.preventDefault();
+            signup();
+            return false;
+        };
+    }
+
+    const logoutButton = document.getElementById("logoutBtn");
+
+    if (logoutButton) {
+        logoutButton.onclick = logout;
+    }
+
+    const currentUser =
+        localStorage.getItem(CURRENT_USER_KEY);
+
+    if (currentUser) {
+        showMainApp();
+    } else {
+        showAuth();
+    }
 });
