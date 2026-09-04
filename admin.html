@@ -1,230 +1,154 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DesiHub - Admin Panel</title>
-  <link rel="stylesheet" href="./css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DesiHub Admin Panel</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f4f6f9;color:#222}
+button{border:0;cursor:pointer;font-family:inherit}
+.admin-layout{display:flex;min-height:100vh}
+.sidebar{width:230px;background:#111827;color:white;position:fixed;left:0;top:0;bottom:0;padding:20px 12px}
+.logo{font-size:23px;font-weight:bold;padding:10px;margin-bottom:20px}
+.nav{display:block;width:100%;padding:13px 15px;margin:6px 0;border-radius:8px;background:transparent;color:white;text-align:left;text-decoration:none}
+.nav:hover,.nav.active{background:#374151}
+.main{margin-left:230px;width:calc(100% - 230px);padding:25px}
+h1{margin-bottom:5px}
+.subtitle{color:#666;margin-bottom:25px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:25px}
+.card{background:white;border-radius:14px;padding:22px;box-shadow:0 2px 10px #ddd}
+.card .icon{font-size:30px}
+.card h3{margin-top:10px;color:#666;font-size:15px}
+.card strong{font-size:30px}
+.panel{background:white;border-radius:14px;padding:22px;margin-bottom:25px;box-shadow:0 2px 10px #ddd}
+.panel h2{margin-bottom:20px}
+.form{display:grid;gap:14px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:15px}
+textarea{min-height:90px;resize:vertical}
+.btn{background:#2563eb;color:white;padding:12px 18px;border-radius:8px;font-weight:bold}
+.btn:hover{background:#1d4ed8}
+.video-item{border:1px solid #ddd;border-radius:10px;padding:15px;margin:10px 0;display:flex;justify-content:space-between;align-items:center;gap:15px}
+.delete{background:#dc2626;color:white;padding:8px 12px;border-radius:7px}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px;border-bottom:1px solid #ddd;text-align:left}
+th{background:#f3f4f6}
+.empty{color:#777;padding:15px 0}
+@media(max-width:700px){
+.sidebar{width:70px;padding:10px 6px}
+.logo{font-size:0;text-align:center}
+.logo:first-letter{font-size:25px}
+.nav{font-size:0;text-align:center;padding:14px 5px}
+.nav:first-letter{font-size:20px}
+.main{margin-left:70px;width:calc(100% - 70px);padding:15px}
+.stats{grid-template-columns:1fr}
+.video-item{display:block}
+}
+</style>
 </head>
 
 <body>
 
-  <div class="admin-layout">
+<div class="admin-layout">
 
-    <!-- Sidebar -->
-    <aside class="admin-sidebar">
-      <div class="admin-logo">🎬 DesiHub</div>
+<aside class="sidebar">
+<div class="logo">🎬 DesiHub</div>
 
-      <button class="admin-nav active" data-section="dashboard">
-        📊 Dashboard
-      </button>
+<a class="nav active" href="#dashboard">📊 Dashboard</a>
+<a class="nav" href="#videos">🎥 Videos</a>
+<a class="nav" href="#users">👥 Users</a>
+<a class="nav" href="index.html">🌐 User Panel</a>
+</aside>
 
-      <button class="admin-nav" data-section="videos">
-        🎥 Videos
-      </button>
+<main class="main">
 
-      <button class="admin-nav" data-section="users">
-        👥 Users
-      </button>
+<section id="dashboard">
+<h1>Admin Panel</h1>
+<p class="subtitle">DesiHub Management</p>
 
-      <a href="index.html" class="admin-nav">
-        🌐 User Panel
-      </a>
-    </aside>
+<div class="stats">
 
-    <!-- Main -->
-    <main class="admin-main">
+<div class="card">
+<div class="icon">🎥</div>
+<h3>Total Videos</h3>
+<strong id="totalVideos">0</strong>
+</div>
 
-      <header class="admin-header">
-        <div>
-          <h1>Admin Panel</h1>
-          <p>DesiHub Management</p>
-        </div>
-      </header>
+<div class="card">
+<div class="icon">👥</div>
+<h3>Total Users</h3>
+<strong id="totalUsers">0</strong>
+</div>
 
-      <!-- Dashboard -->
-      <section id="dashboardSection" class="admin-section">
+<div class="card">
+<div class="icon">⭐</div>
+<h3>Active Premium</h3>
+<strong id="activePremium">0</strong>
+</div>
 
-        <h2>Dashboard</h2>
+</div>
+</section>
 
-        <div class="stats-grid">
+<section id="videos" class="panel">
+<h2>🎥 Manage Videos</h2>
 
-          <div class="stat-card">
-            <div class="stat-icon">🎥</div>
-            <div>
-              <span>Total Videos</span>
-              <strong id="totalVideos">0</strong>
-            </div>
-          </div>
+<form id="videoForm" class="form">
 
-          <div class="stat-card">
-            <div class="stat-icon">👥</div>
-            <div>
-              <span>Total Users</span>
-              <strong id="totalUsers">0</strong>
-            </div>
-          </div>
+<input id="videoTitle" type="text" placeholder="Video Title" required>
 
-          <div class="stat-card">
-            <div class="stat-icon">⭐</div>
-            <div>
-              <span>Active Premium</span>
-              <strong id="activePremium">0</strong>
-            </div>
-          </div>
+<select id="videoCategory" required>
+<option value="">Select Category</option>
+<option>Witchy Moye</option>
+<option>Drama</option>
+<option>Comedy</option>
+<option>Action</option>
+</select>
 
-        </div>
+<input id="videoUrl" type="url" placeholder="Video URL" required>
 
-        <div class="admin-card">
-          <h3>Quick Actions</h3>
+<input id="thumbnailUrl" type="url" placeholder="Thumbnail URL">
 
-          <button class="primary-btn" onclick="showSection('videos')">
-            ➕ Add New Video
-          </button>
+<input id="videoDuration" type="text" placeholder="Duration e.g. 10:25">
 
-          <button class="secondary-btn" onclick="showSection('users')">
-            👥 View Users
-          </button>
-        </div>
+<textarea id="videoDescription" placeholder="Description"></textarea>
 
-      </section>
+<button class="btn" type="submit">➕ Add Video</button>
 
-      <!-- Videos -->
-      <section id="videosSection" class="admin-section hidden">
+</form>
+</section>
 
-        <h2>Manage Videos</h2>
+<section class="panel">
+<h2>📋 Video List</h2>
+<div id="videoList" class="empty">Loading videos...</div>
+</section>
 
-        <div class="admin-card">
+<section id="users" class="panel">
+<h2>👥 Registered Users</h2>
 
-          <h3>Add New Video</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Premium</th>
+</tr>
+</thead>
 
-          <form id="videoForm">
+<tbody id="usersTableBody">
+<tr>
+<td colspan="3" class="empty">No users found</td>
+</tr>
+</tbody>
+</table>
 
-            <div class="form-group">
-              <label>Video Title</label>
-              <input
-                type="text"
-                id="videoTitle"
-                placeholder="Video title"
-                required
-              >
-            </div>
+</section>
 
-            <div class="form-group">
-              <label>Category</label>
+</main>
+</div>
 
-              <select id="videoCategory" required>
-                <option value="">Select Category</option>
-                <option value="witchymoye">Witchy Moye</option>
-                <option value="drama">Drama</option>
-                <option value="comedy">Comedy</option>
-                <option value="action">Action</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>Video URL</label>
-
-              <input
-                type="url"
-                id="videoUrl"
-                placeholder="https://example.com/video.mp4"
-                required
-              >
-            </div>
-
-            <div class="form-group">
-              <label>Thumbnail URL</label>
-
-              <input
-                type="url"
-                id="thumbnailUrl"
-                placeholder="https://example.com/image.jpg"
-                required
-              >
-            </div>
-
-            <div class="form-group">
-              <label>Duration</label>
-
-              <input
-                type="text"
-                id="videoDuration"
-                placeholder="10:30"
-              >
-            </div>
-
-            <div class="form-group">
-              <label>Description</label>
-
-              <textarea
-                id="videoDescription"
-                rows="4"
-                placeholder="Video description"
-              ></textarea>
-            </div>
-
-            <button type="submit" class="primary-btn">
-              ➕ Add Video
-            </button>
-
-          </form>
-
-        </div>
-
-        <div class="admin-card">
-
-          <h3>Video List</h3>
-
-          <div id="videoList">
-            Loading videos...
-          </div>
-
-        </div>
-
-      </section>
-
-      <!-- Users -->
-      <section id="usersSection" class="admin-section hidden">
-
-        <h2>Manage Users</h2>
-
-        <div class="admin-card">
-
-          <h3>Registered Users</h3>
-
-          <div class="table-wrapper">
-
-            <table class="admin-table">
-
-              <thead>
-                <tr>
-                  <th>Email</th>
-                  <th>Subscription</th>
-                  <th>Expiry</th>
-                </tr>
-              </thead>
-
-              <tbody id="usersTableBody">
-              </tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-
-      </section>
-
-    </main>
-
-  </div>
-
-  <!-- Toast -->
-  <div id="toast" class="toast"></div>
-
-  <script src="js/telegram.js"></script>
-  <script src="js/admin.js"></script>
+<script src="js/telegram.js"></script>
+<script src="js/admin.js"></script>
 
 </body>
   </html>
